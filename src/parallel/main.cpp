@@ -24,7 +24,8 @@ struct Command
 unordered_map<string, string> KV_Store;
 pthread_mutex_t KV_Store_mutex = PTHREAD_MUTEX_INITIALIZER;
 queue<int> client_sockets;
-pthread_mutex_t client_sockets_mutex = PTHREAD_MUTEX_INITIALIZER; // Add this line
+
+pthread_mutex_t client_sockets_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 queue<Command> parseInput(istream &inputStream)
 {
@@ -134,17 +135,17 @@ void *worker_thread(void *arg) {
   while (true) {
     int client_socket;
     {
-      // Lock for exclusive access to client_sockets queue
+      
       pthread_mutex_lock(&client_sockets_mutex);
       if (client_sockets.empty()) {
         pthread_mutex_unlock(&client_sockets_mutex);
-        continue; // Wait for new clients
+        continue;
       }
       client_socket = client_sockets.front();
       client_sockets.pop();
       pthread_mutex_unlock(&client_sockets_mutex);
     }
-    // Handle client using client_socket
+    
     char buffer[256];
     int n;
     bzero(buffer, 256);
@@ -209,8 +210,8 @@ int main(int argc, char **argv)
   clilen = sizeof(cli_addr);
   cerr << "Listening to port : " << portno << endl;
 
-  pthread_t thread_pool[2];
-  for (int i = 0; i < 2; i++) {
+  pthread_t thread_pool[4];
+  for (int i = 0; i < 4; i++) {
     pthread_create(&thread_pool[i], NULL, worker_thread, NULL);
   }
 
@@ -223,7 +224,7 @@ int main(int argc, char **argv)
            << endl;
       exit(1);
     }
-    // Push new client sockets onto client_sockets
+    
     pthread_mutex_lock(&client_sockets_mutex);
     client_sockets.push(newsockfd);
     pthread_mutex_unlock(&client_sockets_mutex);
@@ -232,3 +233,19 @@ int main(int argc, char **argv)
   close(sockfd);
   return 0;
 }
+
+// delete bin
+// cd bin/ && rm serial_server && cd .. && rmdir bin/
+
+// rewrite the main.cpp file
+// rm main.cpp && nano main.cpp && g++ main.cpp
+
+// to see all ports (for processid)
+// sudo netstat -lnp
+
+// to delete an active port (here 8080)
+// sudo kill $(sudo lsof -t -i:8080)
+
+
+// lsof -i :8080
+// kill -9 PID
