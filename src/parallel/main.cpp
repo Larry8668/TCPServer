@@ -246,6 +246,5 @@ int main(int argc, char **argv)
 // to delete an active port (here 8080)
 // sudo kill $(sudo lsof -t -i:8080)
 
-
 // lsof -i :8080
 // kill -9 PID
