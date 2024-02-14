@@ -210,8 +210,8 @@ int main(int argc, char **argv)
   clilen = sizeof(cli_addr);
   cerr << "Listening to port : " << portno << endl;
 
-  pthread_t thread_pool[4];
-  for (int i = 0; i < 4; i++) {
+  pthread_t thread_pool[100];
+  for (int i = 0; i < 100; i++) {
     pthread_create(&thread_pool[i], NULL, worker_thread, NULL);
   }
 
